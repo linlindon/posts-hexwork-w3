@@ -16,7 +16,6 @@ router.delete('/', function (req, res) {
 });
 
 router.delete('/:postId', function (req, res) {
-	console.log('進到 delete/:postId', req.originalUrl);
 	postsController.deletePost({ req, res });
 })
 
