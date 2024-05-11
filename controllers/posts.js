@@ -12,13 +12,15 @@ const posts = {
 	async createPosts({ req, res }) {
 		try {
 			const { body } = req;
-			if (body.content) {
+			if (body.content && body.title) {
 				const newPost = await Post.create({
 					content: body.content.trim(),
 					title: body.title.trim(),
 					tags: body.tags,
 				});
 				successHandler({ res, customMessage: '新增 post 成功', data: newPost});
+			} else {
+				errorHandler({ res, customMessage: '未提供文章內容或標題' });
 			}
 		} catch (err) {
 			errorHandler({res, err});
@@ -40,7 +42,6 @@ const posts = {
 	async deletePost({ req, res }) {
 		const { postId } = req.params;
 		try {
-			
 			if (!mongoose.isValidObjectId(postId)){
 				return errorHandler({ res, customMessage: '無效的 post id'});
 			}
@@ -58,10 +59,15 @@ const posts = {
 			if (!mongoose.isValidObjectId(postId)) {
 				return errorHandler({ res, customMessage: '無效的 post id' });
 			}
+			if (body.content) {
+				body.content = body.content.trim();
+			}
+			if (body.title) {
+				body.title = body.title.trim();
+			}
 			const updatePost = await Post.findByIdAndUpdate(postId, body, { runValidators: true, new: true });
-			successHandler({ res, customMessage: '更新 post 成功', updatePost});
+			successHandler({ res, customMessage: '更新 post 成功', data: updatePost});
 		} catch (err) {
-			console.log('進到 err', err.message);
 			errorHandler({res, err});
 		}
 	}
